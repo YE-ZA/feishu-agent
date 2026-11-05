@@ -1,13 +1,13 @@
 ---
-name: feishu-todo-reminders
+name: feishu-todo
 description: 搭建、维护和迁移飞书机器人 /todo 待办日志与工作日提醒，包括文档勾选清单、原生斜杠菜单、后台收件、Codex定时推送及换账号/换电脑恢复。不替代通用飞书原生任务管理。
 metadata:
   requires:
-    bins: [lark-cli]
-    skills: [lark-shared, lark-doc, lark-im, lark-event]
+    bins: [lark-cli, python3]
+    skills: [feishu-agent-setup, lark-shared, lark-doc, lark-im, lark-event]
 ---
 
-# 飞书待办提醒
+# 飞书待办
 
 本功能用云文档里的原生checkbox保存待办，不用飞书原生Task，不需要lark-task、大模型API或API Key。
 
@@ -26,21 +26,22 @@ lark-cli是实际执行工具；以下Skills是操作指令，不是运行服务
 
 | 依赖 | 用途 / 何时读取 |
 | --- | --- |
-| Python 3.11+、sqlite3、zoneinfo | 附带脚本；除部分系统需tzdata外使用标准库 |
-| lark-cli | profile、OAuth、文档、消息、事件、斜杠注册；1.0.98已验证，升级后核对help/schema |
-| lark-shared | 初始化应用、身份、授权、scope和输出契约；接入/认证问题先读 |
+| [feishu-agent-setup](../feishu-agent-setup/SKILL.md) | 检查指定 profile 的 CLI/Python、机器人、本人身份和消息事件；缺失时补齐，已有可用环境直接继续 |
+| lark-shared | 公共 Skill 复用的初始化、身份、认证、scope和输出契约具体说明 |
 | lark-doc | 文档创建/读取/编辑；按场景读fetch/update/XML或创建参考 |
 | lark-im | 消息发送/回复；读send/reply参考，普通post不需交互卡片工作流 |
 | lark-event | im.message.receive_v1长连接及ready、EOF、重连规则 |
 | openai-docs（配置Codex定时任务时） | 当前定时工具、沙箱与权限；有automation_update时用工具管理 |
 | lark-drive / lark-wiki（按需） | 找文档、共享或知识库结构；已有可访问URL时不必引入 |
 
-- 从零安装、授权、文档与菜单：读[搭建流程](references/setup.md)。
+- 待办专属依赖、权限、文档、配置与菜单：读[搭建流程](references/setup.md)。
 - 换电脑、换账号/App、数据和状态迁移：读[迁移流程](references/migration.md)。
 - Linux/macOS/Windows后台服务及Codex定时：读[后台与定时](references/operations.md)。
 - 权限、重复、性能和不回复：读[排障](references/troubleshooting.md)。
 
 ## 执行资源
+
+分发时同时安装 feishu-agent-setup 和所需 lark-* Skills；依赖声明不代替安装。公共搭建流程不启动本功能服务，运行配置与状态仍由本 Skill 管理。
 
 - `scripts/setup.py configure`：只读验证真实身份和文档，生成本机config及运行副本，不发消息、不改远端文档、不启服务。
 - `setup.py service`：生成systemd/launchd/Windows任务文件，不自动安装。

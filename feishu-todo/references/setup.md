@@ -1,31 +1,22 @@
 # 从零搭建
 
-## 依赖安装
+## 公共前置检查
 
-检查 `lark-cli --version`、Python版本和必要命令help。需要Python 3.11+、其标准库SQLite及IANA时区数据。Windows若ZoneInfo失败，在所用Python环境安装tzdata。Node.js/npm/npx只用于所选安装方式，不是机器人运行依赖。
+先按 [feishu-agent-setup](../../feishu-agent-setup/SKILL.md) 检查指定 profile 的 CLI/Python、真实 user/bot、机器人可用范围、私聊事件与发布状态；缺失时补齐，已有可用环境直接继续。不重复创建应用或重新授权。
 
-CLI官方来源：[larksuite/cli](https://github.com/larksuite/cli)。当前可用 `npx @larksuite/cli@latest install`，新环境先核对官方安装说明和系统架构，勿重复安装已有程序。检查docs +fetch/+update、im +messages-send/+messages-reply、event schema im.message.receive_v1、application +slash-command-create的help是否可用。
+## 待办专属依赖与权限
 
-安装或定位lark-shared、lark-doc、lark-im、lark-event的完整Skill目录，保留references。CLI的 `skills list/read` 可以查看内置说明，但不代表Codex已经发现这些Skill。可按官方提供的 `npx skills add larksuite/cli -g -y` 安装或使用环境的skill-installer，并检查当前Codex能发现依赖。配置定时任务时再用openai-docs。
+安装或定位 lark-doc 的完整 Skill 目录，保留 references。检查 docs +fetch/+update 和 application +slash-command-create 的当前 help；消息、事件和身份的公共依赖由 feishu-agent-setup 检查。配置 Codex 定时任务时再用 openai-docs。
 
-## 应用、profile与身份
-
-先读lark-shared和config-init / identity-and-permissions参考。
-
-1. 已有应用优先复用，`lark-cli profile list`确认真实profile；不静默切换全局默认profile。
-2. 无应用时按 `lark-cli config init --new`流程建立/绑定应用，启用机器人、本人可用范围并发布。授权/控制台URL按lark-shared原样展示并配CLI二维码。
-3. 多个应用用独立profile。`profile add --name ... --app-id ... --app-secret-stdin`前先查help；Secret走安全stdin或官方绑定流程，不写脚本、参数、聊天或shell历史。
-4. 用户身份用于本人文档，bot身份用于收私聊、发送/回复。bot缺scope去后台开通并发布，不能用用户OAuth替代。
-5. 用户按文档需要授权docs域，必要时加drive解析wiki。例：指定profile后 `auth login --domain docs --domain drive --no-wait --json`。不要默认申请all。按split-flow展示授权链接和二维码、交还控制，用户完成后再由agent用device-code完成；过期就新建，不复制旧令牌/链接。
+在公共身份检查之上补待办能力：
 
 | 行为 | 身份和能力 |
 | --- | --- |
 | 读、创建、编辑台账，解析wiki | user，文档内容读写/创建与相应节点权限，且账号本身能访问文档 |
-| 接收本人私聊 | bot，im:message.p2p_msg:readonly，订阅im.message.receive_v1 |
-| 主动发送/回复 | bot，im:message:send_as_bot，已发布且本人在可用范围 |
+| 主动提醒与命令回复 | bot，确认公共发送能力适用于当前本人私聊；主动发送仍需功能验收 |
 | 原生斜杠注册 | bot，application:app_slash_command:read及:write |
 
-精确最小scope依当前CLI schema、missing_scopes和官方后台确定，勿盲目扩大。事件与回调配置长连接接收及“接收消息”，新增权限/订阅后按飞书要求发布。不需要card.action.trigger。
+精确 scope 看当前 CLI schema、missing_scopes 和后台；缺失时按公共 Skill 的授权路由补齐，不预先申请绘图等其他功能的权限。
 
 ## 文档与本机配置
 
@@ -38,6 +29,8 @@ python <SKILL_DIR>/scripts/setup.py configure --profile <PROFILE_NAME> --doc <RE
 ```
 
 CLI不在PATH时加 `--cli <ABSOLUTE_CLI_PATH>`；自定义目录加 `--runtime-dir <ABSOLUTE_RUNTIME_DIR>`。不同账号、App或文档用新instance。脚本只读验证user/bot和文档，自动解析实际绑定，不创建远端资源、不发送、不启动。
+
+Skill 名为 `feishu-todo`；为兼容已有实例，默认运行目录与生成的服务名仍保留 `feishu-todo-reminders` 前缀，勿据技能改名搬动已有状态或重建服务。
 
 默认运行目录：Linux `$XDG_DATA_HOME/feishu-todo-reminders/<instance>`（XDG默认~/.local/share）；macOS `~/Library/Application Support/feishu-todo-reminders/<instance>`；Windows `%LOCALAPPDATA%/feishu-todo-reminders/<instance>`。
 

@@ -1,0 +1,3 @@
+interface:
+  display_name: "飞书定时提醒"
+  short_description: "搭建和迁移飞书定时提醒机器人，支持规则解析、固定编号、查看与回复取消"

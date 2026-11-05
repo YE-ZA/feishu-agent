@@ -1,0 +1,1 @@
+{"type":"object","properties":{"passed":{"type":"boolean"},"issues":{"type":"array","items":{"type":"string"}}},"required":["passed","issues"],"additionalProperties":false}
