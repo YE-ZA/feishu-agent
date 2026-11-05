@@ -1,0 +1,3 @@
+interface:
+  display_name: "飞书待办提醒"
+  short_description: "搭建和迁移飞书斜杠待办、文档清单及工作日提醒，支持换账号与跨电脑恢复"

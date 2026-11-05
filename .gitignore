@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.log
+config.json
+deployment.json
+permission-check.json
+state/
